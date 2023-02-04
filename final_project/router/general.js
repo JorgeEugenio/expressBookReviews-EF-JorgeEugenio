@@ -1,5 +1,6 @@
 const express = require('express');
-let books = require("./booksdb.js");
+let { getBooks, getBookbyId, getBookByAuthor, getBookByTitle, getBookReviews } = require("./booksdb.js");
+
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
@@ -34,48 +35,44 @@ public_users.post("/register", (req, res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/', function (req, res) {
-  const result = JSON.stringify(books, null, 2)
-  const result2 = JSON.parse(result)
-
+public_users.get('/', async (req, res) => {
+  const books = await getBooks()
   res.status(200).send({
     data: books
-  });
+  })
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn', function (req, res) {
+public_users.get('/isbn/:isbn', async (req, res) => {
   const { isbn } = req.params
-  result = books[Number(isbn)]
+  book = await getBookbyId(Number(isbn))
   return res.status(200).send({
-    data: result
+    data: book
   });
 });
 
 // Get book details based on author
-public_users.get('/author/:author', function (req, res) {
+public_users.get('/author/:author', async (req, res) => {
   const { author } = req.params
-  const result = Object.values(books)
-  const authors = result.filter(r => r['author'] == author)
+  const book = await getBookByAuthor(author)
   return res.status(200).send({
-    data: authors
+    data: book
   });
 });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
+public_users.get('/title/:title', async (req, res) => {
   const { title } = req.params
-  const result = Object.values(books)
-  const book = result.filter(r => r['title'] == title)
+  const book = await getBookByTitle(title)
   return res.status(200).send({
     data: book
   });
 });
 
 //  Get book review
-public_users.get('/review/:isbn', function (req, res) {
+public_users.get('/review/:isbn', async (req, res) => {
   const { isbn } = req.params
-  const bookReview = books[Number(isbn)]['reviews']
+  const bookReview = await getBookReviews(isbn)
   return res.status(200).send({
     data: bookReview
   });
