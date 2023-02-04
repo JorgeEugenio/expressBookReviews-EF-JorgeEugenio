@@ -60,7 +60,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 
   res.status(200).send({
-    data: JSON.parse(JSON.stringify(books))
+    data: JSON.parse(JSON.stringify(books[Number(isbn)]['reviews'][username]))
   })  
 });
 // Delete a book review
@@ -75,7 +75,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   }
 
   res.status(200).send({
-    data: JSON.parse(JSON.stringify(books))
+    data: `the book with isbn: ${isbn} was deleted`
   })  
 });
 
